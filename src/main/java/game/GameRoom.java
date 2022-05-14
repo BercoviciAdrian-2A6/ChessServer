@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class GameRoom extends Thread
 {
     public static final String NEW_TURN_STRING = "Make a move!";
-    public static final float START_TIMER = 30;
+    public static final float START_TIMER = 30000;
     public static final float MIN_TIMER = 10;
 
     UserEntity playerOne;//white
@@ -24,6 +24,11 @@ public class GameRoom extends Thread
 
     float player1RemainingTime = START_TIMER;
     float player2RemainingTime = START_TIMER;
+
+    UserEntity forfeit;
+
+    ArrayList<String> messageAuthor = new ArrayList<>();
+    ArrayList<String> messages = new ArrayList<>();
 
     public GameRoom ( UserEntity playerOne, ClientThread playerThread )
     {
@@ -102,7 +107,15 @@ public class GameRoom extends Thread
             if (p2currentRemaining <= 0)
                 winner.add( playerOne );
 
-            System.out.println(p1currentRemaining + " - " + p2currentRemaining);
+            if (forfeit != null)
+            {
+                if (forfeit.getUsername() == playerOne.getUsername())
+                    winner.add( playerTwo );
+                else
+                    winner.add( playerOne );
+            }
+
+            //System.out.println(p1currentRemaining + " - " + p2currentRemaining);
         }
 
         String endGameMessage = "";
@@ -128,6 +141,7 @@ public class GameRoom extends Thread
             p2Thread.queueResponse(endGameMessage);
         }
 
+        debugPrintMessages();
     }
 
     public Chessboard getChessboard()
@@ -180,4 +194,21 @@ public class GameRoom extends Thread
         return (System.nanoTime() - roundBeginNano) / 1000000000.0f;
     }
 
+    public void setForfeit(UserEntity forfeit) {
+        this.forfeit = forfeit;
+    }
+
+    public void addMessage( String authorUsername, String messageContent )
+    {
+        messageAuthor.add(authorUsername);
+        messages.add(messageContent);
+    }
+
+    void debugPrintMessages()
+    {
+        for (int i = 0; i < messageAuthor.size(); i++)
+        {
+            System.out.println(messageAuthor.get(i) + " said: " + messages.get(i));
+        }
+    }
 }

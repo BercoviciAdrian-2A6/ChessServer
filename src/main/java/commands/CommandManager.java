@@ -19,6 +19,8 @@ public class CommandManager
         commands.add( new IdleCommand("idle") );
         commands.add( new QueueCommand("queue") );
         commands.add( new ChessMoveCommand("move") );
+        commands.add( new ForfeitCommand("forfeit") );
+        commands.add( new GameMessageCommand("gameMessage") );
     }
 
     public static CommandManager getSingleton()
