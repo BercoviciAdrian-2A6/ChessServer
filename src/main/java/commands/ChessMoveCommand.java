@@ -1,5 +1,6 @@
 package commands;
 
+import chessboard.ChessColor;
 import game.GameRoom;
 import tcp.ClientThread;
 
@@ -38,7 +39,7 @@ public class ChessMoveCommand extends Command
 
         GameRoom gameRoom = clientThread.getGameRoom();
 
-        int activePlayerColor = gameRoom.getRoundOwnerColor();
+        ChessColor activePlayerColor = gameRoom.getRoundOwnerColor();
 
         int moveStatus = gameRoom.getChessboard().movePiece(parameters.get(0), activePlayerColor);
 

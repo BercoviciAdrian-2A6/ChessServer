@@ -1,5 +1,6 @@
 package chessboard.pieces;
 
+import chessboard.ChessColor;
 import chessboard.ChessField;
 
 import java.util.ArrayList;
@@ -15,10 +16,10 @@ public class Pawn extends ChessPiece
         int moveDirection = -1;
         int frontalReach = 1;
 
-        if (getPieceColor() != 0)//is not white
+        if (getPieceColor().equals(ChessColor.BLACK))//is not white
             moveDirection = 1;
 
-        if (( getPieceColor() == 0 && currentI == 6 ) || (getPieceColor() != 0 && currentI == 1) )
+        if (( getPieceColor().equals(ChessColor.WHITE) && currentI == 6 ) || (getPieceColor().equals(ChessColor.BLACK) && currentI == 1) )
             frontalReach = 2;
 
         ArrayList<ChessField> moves = new ArrayList<>();
@@ -59,7 +60,7 @@ public class Pawn extends ChessPiece
 
         int moveDirection = -1;
 
-        if (getPieceColor() != 0)//is not white
+        if (getPieceColor().equals(ChessColor.BLACK))//is not white
             moveDirection = 1;
 
         ChessField diagonal1 = getParentField().getChessboard().getFieldAtCoordinates( currentI + moveDirection, currentJ + 1 );

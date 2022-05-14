@@ -28,9 +28,9 @@ public class Chessboard
             for (int columnIndex = 0; columnIndex < 8; columnIndex++)
             {
                 if (isWhite)
-                    board[lineIndex][columnIndex] = new ChessField( this, lineIndex, columnIndex, 0);
+                    board[lineIndex][columnIndex] = new ChessField( this, lineIndex, columnIndex, ChessColor.WHITE);
                 else
-                    board[lineIndex][columnIndex] = new ChessField( this, lineIndex, columnIndex, 1);
+                    board[lineIndex][columnIndex] = new ChessField( this, lineIndex, columnIndex, ChessColor.BLACK);
 
                 isWhite = !isWhite;
             }
@@ -46,7 +46,7 @@ public class Chessboard
             field.setChessPiece( ChessPiece.getChessPieceFromCode('*') );*/
     }
 
-    ArrayList<ChessField> getThreatenedFields(int movedPieceColor)
+    ArrayList<ChessField> getThreatenedFields(ChessColor movedPieceColor)
     {
         ArrayList<ChessField> threatenedFields = new ArrayList<>();
 
@@ -56,7 +56,7 @@ public class Chessboard
             {
                 ChessPiece piece = board[ lineIndex ][ columnIndex ].getChessPiece();
 
-                if (piece == null || piece.getPieceColor() == movedPieceColor)
+                if (piece == null || piece.getPieceColor().equals(movedPieceColor))
                     continue;
 
                 threatenedFields.addAll( piece.getThreatenedFields() );
@@ -66,11 +66,11 @@ public class Chessboard
         return threatenedFields;
     }
 
-    boolean kingIsThreatened(int movedPieceColor)
+    boolean kingIsThreatened(ChessColor movedPieceColor)
     {
         char kingCode = 'K';
 
-        if (movedPieceColor != 0)
+        if (movedPieceColor.equals(ChessColor.BLACK))
             kingCode = 'k';
 
         ArrayList<ChessField> threatenedFields = getThreatenedFields(movedPieceColor);
@@ -90,7 +90,7 @@ public class Chessboard
 
     }
 
-    public int movePiece(String move, int playerColor)
+    public int movePiece(String move, ChessColor playerColor)
     {
         String parseMove[] = move.split("-");
 
@@ -209,7 +209,7 @@ public class Chessboard
             for (int j = 0; j < 8; j++)
             {
                 if (board[i][j].getChessPiece() == null) {
-                    if (board[i][j].getFieldColor() == 0)
+                    if (board[i][j].getFieldColor() == ChessColor.WHITE)
                         System.out.print("  ");
                     else
                         System.out.print("- ");

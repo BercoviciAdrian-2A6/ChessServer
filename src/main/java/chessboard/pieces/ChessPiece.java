@@ -1,5 +1,6 @@
 package chessboard.pieces;
 
+import chessboard.ChessColor;
 import chessboard.ChessField;
 
 import java.security.PublicKey;
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 
 public abstract class ChessPiece
 {
-    private int pieceColor = 0;
+    private ChessColor pieceColor;
     private ChessField parentField;
     private char pieceCode;
 
@@ -89,7 +90,7 @@ public abstract class ChessPiece
         {
             King whiteKing = new King();
             whiteKing.setPieceCode(code);
-            whiteKing.setPieceColor(0);
+            whiteKing.setPieceColor(ChessColor.WHITE);
             return whiteKing;
         }
 
@@ -97,7 +98,7 @@ public abstract class ChessPiece
         {
             King blackKing = new King();
             blackKing.setPieceCode(code);
-            blackKing.setPieceColor(1);
+            blackKing.setPieceColor(ChessColor.BLACK);
             return blackKing;
         }
 
@@ -105,7 +106,7 @@ public abstract class ChessPiece
         {
             Queen whiteQueen = new Queen();
             whiteQueen.setPieceCode(code);
-            whiteQueen.setPieceColor(0);
+            whiteQueen.setPieceColor(ChessColor.WHITE);
             return whiteQueen;
         }
 
@@ -113,7 +114,7 @@ public abstract class ChessPiece
         {
             Queen blackQueen = new Queen();
             blackQueen.setPieceCode(code);
-            blackQueen.setPieceColor(1);
+            blackQueen.setPieceColor(ChessColor.BLACK);
             return blackQueen;
         }
 
@@ -121,7 +122,7 @@ public abstract class ChessPiece
         {
             Rook whiteRook = new Rook();
             whiteRook.setPieceCode(code);
-            whiteRook.setPieceColor(0);
+            whiteRook.setPieceColor(ChessColor.WHITE);
             return whiteRook;
         }
 
@@ -129,7 +130,7 @@ public abstract class ChessPiece
         {
             Rook blackRook = new Rook();
             blackRook.setPieceCode(code);
-            blackRook.setPieceColor(1);
+            blackRook.setPieceColor(ChessColor.BLACK);
             return blackRook;
         }
 
@@ -138,7 +139,7 @@ public abstract class ChessPiece
         {
             Knight whiteKnight = new Knight();
             whiteKnight.setPieceCode(code);
-            whiteKnight.setPieceColor(0);
+            whiteKnight.setPieceColor(ChessColor.WHITE);
             return whiteKnight;
         }
 
@@ -146,7 +147,7 @@ public abstract class ChessPiece
         {
             Knight blackKnight = new Knight();
             blackKnight.setPieceCode(code);
-            blackKnight.setPieceColor(1);
+            blackKnight.setPieceColor(ChessColor.BLACK);
             return blackKnight;
         }
 
@@ -154,7 +155,7 @@ public abstract class ChessPiece
         {
             Bishop whiteBishop = new Bishop();
             whiteBishop.setPieceCode(code);
-            whiteBishop.setPieceColor(0);
+            whiteBishop.setPieceColor(ChessColor.WHITE);
             return whiteBishop;
         }
 
@@ -162,7 +163,7 @@ public abstract class ChessPiece
         {
             Bishop blackBishop = new Bishop();
             blackBishop.setPieceCode(code);
-            blackBishop.setPieceColor(1);
+            blackBishop.setPieceColor(ChessColor.BLACK);
             return blackBishop;
         }
 
@@ -170,7 +171,7 @@ public abstract class ChessPiece
         {
             Pawn whitePawn = new Pawn();
             whitePawn.setPieceCode(code);
-            whitePawn.setPieceColor(0);
+            whitePawn.setPieceColor(ChessColor.WHITE);
             return whitePawn;
         }
 
@@ -178,7 +179,7 @@ public abstract class ChessPiece
         {
             Pawn blackPawn = new Pawn();
             blackPawn.setPieceCode(code);
-            blackPawn.setPieceColor(1);
+            blackPawn.setPieceColor(ChessColor.BLACK);
             return blackPawn;
         }
 
@@ -202,11 +203,11 @@ public abstract class ChessPiece
         this.parentField = parentField;
     }
 
-    public int getPieceColor() {
+    public ChessColor getPieceColor() {
         return pieceColor;
     }
 
-    public void setPieceColor(int pieceColor) {
+    public void setPieceColor(ChessColor pieceColor) {
         this.pieceColor = pieceColor;
     }
 

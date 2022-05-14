@@ -6,10 +6,10 @@ public class ChessField
 {
     Chessboard chessboard;
     private int coordinateI, coordinateJ;
-    private int fieldColor = 0;
+    private ChessColor fieldColor;
     private ChessPiece chessPiece = null;
 
-    public ChessField( Chessboard chessboard, int i, int j, int fieldColor)
+    public ChessField( Chessboard chessboard, int i, int j, ChessColor fieldColor)
     {
         this.chessboard = chessboard;
         coordinateI = i;
@@ -17,7 +17,7 @@ public class ChessField
         this.fieldColor = fieldColor;
     }
 
-    public int getFieldColor() {
+    public ChessColor getFieldColor() {
         return fieldColor;
     }
 

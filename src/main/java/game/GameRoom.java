@@ -1,6 +1,7 @@
 package game;
 
 import Entities.UserEntity;
+import chessboard.ChessColor;
 import chessboard.Chessboard;
 import tcp.ClientThread;
 
@@ -176,12 +177,12 @@ public class GameRoom extends Thread
         return roundOwner;
     }
 
-    public int getRoundOwnerColor()
+    public ChessColor getRoundOwnerColor()
     {
         if (roundOwner == playerOne)
-            return 0;
+            return ChessColor.WHITE;
 
-        return 1;
+        return ChessColor.BLACK;
     }
 
     void setRoundBeginNano()
