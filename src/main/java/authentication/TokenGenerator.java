@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class TokenGenerator
 {
-    public static final int tokenLength = 50;
+    public static final int tokenLength = 10;
 
     public static String createToken()
     {

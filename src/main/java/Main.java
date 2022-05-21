@@ -1,15 +1,19 @@
 import chessboard.Chessboard;
+import dao.UserDAO;
 import tcp.Server;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main
 {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException {
 
-        Server server = new Server();
-        server.start();
+        UserDAO.createUser("Steve", "12345");
+
+        //Server server = new Server();
+        //server.start();
 
         /*Chessboard chessboard = new Chessboard();
 

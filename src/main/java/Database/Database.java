@@ -12,8 +12,10 @@ public class Database {
     static Connection connection;
 
     public Database() throws SQLException {
-        String address = "jdbc:postgresql://localhost:5432/JavaLab10";
-        connection = DriverManager.getConnection(address, "postgres", "STUDENT");
+        //String address = "jdbc:postgresql://localhost:5432/JavaLab10";
+        //connection = DriverManager.getConnection(address, "postgres", "STUDENT");
+        String address = "jdbc:oracle:thin:@//localhost:1521/XE";
+        connection = DriverManager.getConnection(address, "STUDENT", "STUDENT");
     }
 
 
@@ -34,14 +36,14 @@ public class Database {
 
     public void addUser(UserEntity user) throws SQLException {
         Statement statement = connection.createStatement();
-        statement.execute("insert into users (id, username, password, authentication_token) values (" + getIdForUser() + ", \'" + user.getUsername() + "\', \'" + user.getPassword()
+        statement.execute("insert into useri (id_user, username, parola, token) values (" + getIdForUser() + ", \'" + user.getUsername() + "\', \'" + user.getPassword()
                 + "\', \'" + user.getAuthenticationToken() + "\')");
     }
 
     public int getIdForUser() throws SQLException {
         Statement statement = connection.createStatement();
         int maxId = 0;
-        ResultSet resultSet = statement.executeQuery("select max(id) as \"max\" from users");
+        ResultSet resultSet = statement.executeQuery("select max(id_user) as \"max\" from useri");
         if (resultSet.next()) {
             maxId = resultSet.getInt("max");
         }
