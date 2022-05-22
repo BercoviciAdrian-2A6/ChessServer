@@ -2,14 +2,25 @@ package Entities;
 
 public class UserEntity
 {
+    private int id;
     private String username;
     private String password;
     private String authenticationToken;
 
-    public UserEntity(String username, String password, String authenticationToken) {
+    public UserEntity(int id,String username, String password, String authenticationToken)
+    {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.authenticationToken = authenticationToken;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUsername() {

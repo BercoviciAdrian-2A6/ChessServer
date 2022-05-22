@@ -55,7 +55,7 @@ public class ChessMoveCommand extends Command
         if (moveStatus == 0)
         {
             commandOutput.setMessage("MOVE WAS APPLIED!");
-            clientThread.getGameRoom().changeRoundOwner();
+            clientThread.getGameRoom().changeRoundOwner(parameters.get(0));
         }
 
         return commandOutput;

@@ -1,9 +1,13 @@
 package commands;
 
+import Database.Singleton;
 import Entities.UserEntity;
 import dao.UserDAO;
 import tcp.ClientThread;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.Types;
 import java.util.ArrayList;
 
 public class RegisterCommand extends Command
@@ -18,25 +22,31 @@ public class RegisterCommand extends Command
      * @return informs the client if a user has been created
      */
     @Override
-    public CommandOutput runCommand(ArrayList<String> parameters, ClientThread clientThread) throws Exception {
+    public CommandOutput runCommand(ArrayList<String> parameters, ClientThread clientThread) throws Exception
+    {
         CommandOutput commandOutput = new CommandOutput();
 
-        String username = parameters.get(0);
-        String password = parameters.get(1);
+        Connection dbConnection = Singleton.getDataBase().getConnection();
 
-        UserEntity userExists = UserDAO.getUserByUsername( username );
+        CallableStatement statement = dbConnection.prepareCall("begin ? := register(?,?); end;");
 
-        if (userExists != null)
-        {
-            commandOutput.setMessage("Username already in use!");
-            commandOutput.setStatus(-1);
-            return commandOutput;
-        }
+        statement.registerOutParameter(1, Types.INTEGER);
 
-        UserDAO.createUser(username, password);
+        statement.setString(2, parameters.get(0) );
 
-        commandOutput.setMessage("Username: " + username + " was created!");
-        commandOutput.setStatus(1);
+        statement.setString(3, parameters.get(1) );
+
+        statement.execute();
+
+        int createResult = statement.getInt(1);
+
+        statement.close();
+
+        if (createResult == 1)
+            commandOutput.setMessage("USER REGISTERED SUCCESSFULLY!");
+        else
+            commandOutput.setMessage("REGISTRATION FAILED! USERNAME ALREADY TAKEN!");
+
         return commandOutput;
     }
 }

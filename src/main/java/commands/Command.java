@@ -20,7 +20,11 @@ public abstract class Command
         if (!trigger.equals( this.trigger ))
             return null;
 
-        this.sender = UserDAO.getUserByAuthenticationToken(senderAuthenticationToken);
+        if (senderAuthenticationToken != "NULL")
+            this.sender = UserDAO.getUserByAuthenticationToken(senderAuthenticationToken);
+        else
+            this.sender = null;
+
         return runCommand(parameters, clientThread);
     }
 

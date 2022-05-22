@@ -2,38 +2,48 @@ package dao;
 
 import Database.Singleton;
 import Entities.UserEntity;
-import authentication.TokenGenerator;
 
+
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Statement;
 
 public class UserDAO
 {
-    public static void createUser(String username, String password ) throws SQLException {
-        UserEntity user = new UserEntity( username, password, TokenGenerator.createToken() );
-        Singleton.getInstance().addUser(user);
+
+    public static void empty() throws SQLException {
+        Statement statement = Singleton.getDataBase().getConnection().createStatement();
+        statement.execute("truncate table useri");
     }
 
+    public static UserEntity getUserByAuthenticationToken(String authenticationToken) throws Exception
+    {
+        UserEntity result = null;
 
-    public static UserEntity getUserByAuthenticationToken(String authenticationToken) throws Exception {
-        return Singleton.getInstance().getUserByAuthenticationToken(authenticationToken);
+        Statement statement = Singleton.getDataBase().getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from useri where token = \'" + authenticationToken + "\'");
+        if(resultSet.next()){
+            result =  new UserEntity( resultSet.getInt("id_user") ,resultSet.getString("username"),resultSet.getString("parola"),resultSet.getString("token"));
+        }
+
+        statement.close();
+        return result;
     }
 
-    public static UserEntity getUserByUsername(String username) throws Exception {
-        return Singleton.getInstance().getUserByName(username);
+    public static UserEntity getUserById(int id) throws Exception
+    {
+        UserEntity result = null;
+
+        Statement statement = Singleton.getDataBase().getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from useri where token = " + id);
+        if(resultSet.next()){
+            result =  new UserEntity( resultSet.getInt("id_user") ,resultSet.getString("username"),resultSet.getString("parola"),resultSet.getString("token"));
+        }
+
+        statement.close();
+        return result;
     }
 
-    public static List<UserEntity> getUsersByUsernames(List<String> usernames) throws Exception {
-        return Singleton.getInstance().getUsersByUsername(usernames);
-    }
-
-    public static void emptyTable() throws SQLException {
-        Singleton.getInstance().emptyTableUsers();
-    }
-
-    public static ArrayList<UserEntity> getAllUsers() throws SQLException {
-        return Singleton.getInstance().getAllUsers();
-    }
 
 }

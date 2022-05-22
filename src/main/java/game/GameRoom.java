@@ -3,8 +3,11 @@ package game;
 import Entities.UserEntity;
 import chessboard.ChessColor;
 import chessboard.Chessboard;
+import dao.MatchDAO;
+import dao.MoveDAO;
 import tcp.ClientThread;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class GameRoom extends Thread
@@ -13,6 +16,7 @@ public class GameRoom extends Thread
     public static final float START_TIMER = 30000;
     public static final float MIN_TIMER = 10;
 
+    int matchIndex = -1;
     UserEntity playerOne;//white
     UserEntity playerTwo;//black
     UserEntity invitedPlayerTwo;
@@ -58,6 +62,8 @@ public class GameRoom extends Thread
 
     public void run()
     {
+        long matchBeginningNano = System.nanoTime();
+
         String matchBegin = "The match between '" + playerOne.getUsername() + "' and '" + playerTwo.getUsername() + "' has begun!";
         System.out.println(matchBegin);
 
@@ -69,6 +75,12 @@ public class GameRoom extends Thread
         chessboard.debugPrintChessboard();
 
         roundOwner = playerOne;
+
+        try {
+            matchIndex = MatchDAO.addMatch(playerOne, playerTwo);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         setRoundBeginNano();
 
@@ -121,9 +133,12 @@ public class GameRoom extends Thread
 
         String endGameMessage = "";
 
+        int winnerFlag = -1;
+
         if (winner.size() == 1)
         {
             endGameMessage = "The winner is: '" + winner.get(0).getUsername() + "'!";
+            winnerFlag = winner.get(0).getId();
         }
         else
         {
@@ -142,6 +157,15 @@ public class GameRoom extends Thread
             p2Thread.queueResponse(endGameMessage);
         }
 
+        try {
+            MatchDAO.endMatch(
+                    matchIndex,
+                    winnerFlag,
+                    (int)((System.nanoTime() - matchBeginningNano) / 1000000000));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         debugPrintMessages();
     }
 
@@ -150,8 +174,10 @@ public class GameRoom extends Thread
         return chessboard;
     }
 
-    public void changeRoundOwner()
+    public void changeRoundOwner(String moveString) throws SQLException
     {
+        logRound(roundOwner, moveString);
+
         if (roundOwner == playerOne)
         {
             player1RemainingTime -= getRoundEtmr();//decrease remaining timer before changing
@@ -170,6 +196,10 @@ public class GameRoom extends Thread
         }
 
         setRoundBeginNano();
+    }
+
+    void logRound(UserEntity user,String moveString) throws SQLException {
+        MoveDAO.addMove( matchIndex, user, moveString, getRoundEtmr());
     }
 
     public UserEntity getRoundOwner()

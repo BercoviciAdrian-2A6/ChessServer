@@ -1,0 +1,204 @@
+
+CREATE TABLE useri (
+id_user INTEGER PRIMARY KEY, 
+username VARCHAR2(100) UNIQUE NOT NULL, 
+parola VARCHAR2(100) NOT NULL, 
+token VARCHAR2(10));
+
+CREATE TABLE games (
+id_match INTEGER PRIMARY KEY, 
+white_player_id INTEGER, 
+black_player_id INTEGER, 
+winnerflag INTEGER, 
+start_timestamp VARCHAR2(30) NOT NULL,
+duration_seconds INTEGER);
+
+CREATE TABLE moves (
+id_match INTEGER,
+id_player INTEGER,
+absolute_move_index INTEGER,
+relative_move_index INTEGER not null,
+move_string VARCHAR2(10),
+move_duration_seconds NUMBER,
+PRIMARY KEY(id_match, id_player, absolute_move_index));
+
+--=========================================================================================================
+
+CREATE SEQUENCE user_seq START WITH 1;
+
+CREATE SEQUENCE game_seq START WITH 1;
+
+--=========================================================================================================
+
+CREATE OR REPLACE TRIGGER user_trigger
+BEFORE INSERT ON useri 
+FOR EACH ROW
+BEGIN
+  SELECT user_seq.NEXTVAL 
+  INTO   :new.id_user
+  FROM   dual;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE FUNCTION register (p_username in VARCHAR2, p_parola in VARCHAR2) RETURN INTEGER
+AS
+ v_newId INTEGER;
+ v_same_username_counter INTEGER:= 0;
+BEGIN
+  SELECT user_seq.NEXTVAL 
+  INTO   v_newId
+  FROM   dual;
+  
+  SELECT COUNT(username) INTO v_same_username_counter FROM useri where username = p_username;
+  
+  IF v_same_username_counter > 0 THEN
+    RETURN -1;
+  END IF;
+  
+  INSERT INTO useri( id_user, username, parola, token ) VALUES (v_newId, p_username, p_parola, NULL);
+  
+  RETURN 1;
+END;
+
+--=========================================================================================================
+
+CREATE DIRECTORY DIR__GAME AS 'C:\Users\adria\Desktop\Sah';
+
+CREATE OR REPLACE PROCEDURE adauga_utilizatori_din_fisier
+AS
+  v_fisier UTL_FILE.FILE_TYPE;
+  v_utilizator VARCHAR2(200);
+  v_nume_utilizator VARCHAR2(200);
+  v_parola VARCHAR2(200);
+BEGIN
+  v_fisier:=UTL_FILE.FOPEN('DIR__GAME','users.txt','R');
+  LOOP
+    BEGIN
+      UTL_FILE.GET_LINE(v_fisier,v_utilizator);
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN EXIT;
+    END;
+      v_nume_utilizator:=SUBSTR(v_utilizator, 0 ,INSTR(v_utilizator,' ', 1, 1)-1);
+      v_parola:=SUBSTR(v_utilizator ,INSTR(v_utilizator,' ', 1, 1)+1);
+      INSERT INTO useri (username, parola) VALUES (v_nume_utilizator, v_parola);
+  END LOOP;
+  UTL_FILE.FCLOSE(v_fisier);
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE FUNCTION generate_token RETURN VARCHAR2
+AS
+ v_token VARCHAR2(10);
+ v_duplicate_tokens INTEGER:= 0;
+BEGIN
+ LOOP
+    SELECT dbms_random.STRING('X', 10) INTO v_token from dual; 
+    SELECT COUNT(username) INTO v_duplicate_tokens FROM useri where token = v_token;
+    EXIT WHEN v_duplicate_tokens = 0;
+ END LOOP;
+ RETURN v_token;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE FUNCTION login(p_username in VARCHAR2, p_parola in VARCHAR2) RETURN VARCHAR2
+AS
+  v_are_cont INTEGER;
+  v_token VARCHAR2(10);
+  v_e_logat INTEGER;
+BEGIN
+  SELECT count(*) INTO v_are_cont FROM useri WHERE TRIM(username)=TRIM(p_username) AND TRIM(parola)=TRIM(p_parola);
+  IF(v_are_cont=1) THEN
+      v_token := generate_token;
+      UPDATE useri SET token=v_token WHERE TRIM(username)=TRIM(p_username) AND TRIM(parola)=TRIM(p_parola);
+      RETURN v_token;
+  ELSE
+    RETURN 'Nu exista acest cont!';
+  END IF;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE FUNCTION logout(p_username VARCHAR2, p_parola VARCHAR2) RETURN VARCHAR2
+AS
+  v_are_cont INTEGER;
+  v_token VARCHAR2(10);
+  v_e_logat INTEGER;
+BEGIN
+  SELECT count(*) INTO v_are_cont FROM useri WHERE TRIM(username)=TRIM(p_username) AND TRIM(parola)=TRIM(p_parola);
+  IF(v_are_cont=1) THEN
+    SELECT count(*) INTO v_e_logat FROM useri WHERE token is not null AND TRIM(username)=TRIM(p_username) AND TRIM(parola)=TRIM(p_parola);
+    IF(v_e_logat=1) THEN    --este logat
+      UPDATE useri SET token=null WHERE TRIM(username)=TRIM(p_username) AND TRIM(parola)=TRIM(p_parola);
+      RETURN 'Logout efectuat cu succes!';
+    ELSE
+        RETURN 'Acest cont nu este logat!'; --iese fortat din functie si returneaza mesajul respectiv
+    END IF;
+  ELSE
+    RETURN 'Nu exista acest cont!';
+  END IF;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE FUNCTION create_game( p_white_player_id INTEGER, p_black_player_id INTEGER ) RETURN INTEGER as
+v_new_game_id INTEGER:= 0;
+v_start_timestamp VARCHAR2(30);
+BEGIN
+  SELECT game_seq.NEXTVAL INTO v_new_game_id FROM dual;
+  SELECT TO_CHAR(SYSDATE, 'YYYY:MM:DD:HH24:MI:SS') INTO v_start_timestamp FROM dual;
+  INSERT INTO games (id_match,white_player_id, black_player_id, winnerflag, start_timestamp, duration_seconds) VALUES 
+  (v_new_game_id, p_white_player_id, p_black_player_id, NULL, v_start_timestamp, NULL);
+  return v_new_game_id;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE PROCEDURE end_game(p_id_match INTEGER, p_winnerflag INTEGER, p_duration_seconds INTEGER) AS
+BEGIN
+    UPDATE games set winnerflag = p_winnerflag, duration_seconds = p_duration_seconds where p_id_match = id_match;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE PROCEDURE add_move( p_id_match INTEGER, p_id_player INTEGER, p_move_string VARCHAR2, p_move_duration_seconds NUMBER ) as
+v_absolute_move_index INTEGER;
+v_relative_move_index INTEGER;
+BEGIN
+    SELECT COUNT(id_match) INTO v_absolute_move_index FROM moves where id_match = p_id_match;
+    SELECT COUNT(id_match) INTO v_relative_move_index FROM moves where id_match = p_id_match and id_player = p_id_player;
+    INSERT INTO moves (id_match, id_player, absolute_move_index, relative_move_index, move_string, move_duration_seconds)
+    VALUES (p_id_match, p_id_player, v_absolute_move_index, v_relative_move_index, p_move_string, p_move_duration_seconds );
+END;
+
+--=========================================================================================================
+
+
+CREATE OR REPLACE FUNCTION reconstruct_game(p_id_match INTEGER) RETURN VARCHAR2 AS
+    v_moves VARCHAR2(20000);
+    v_winnerflag INTEGER;
+    v_match_exists INTEGER;
+BEGIN
+    SELECT COUNT(winnerflag) INTO v_match_exists FROM games where id_match = p_id_match;
+    
+    if v_match_exists = 0 THEN
+        return 'INVALID GAME INDEX!';
+    END IF;
+
+    SELECT winnerflag INTO v_winnerflag FROM games where id_match = p_id_match;
+    
+    if (v_winnerflag = NULL) THEN
+        RETURN 'GAME IN PROGRESS!';
+    END IF;
+
+    FOR v_i IN (SELECT * FROM moves WHERE id_match=P_id_match order by absolute_move_index) LOOP
+        v_moves:=concat(v_moves, v_i.move_string);
+        v_moves:=concat(v_moves, '/');
+    END LOOP;
+    RETURN v_moves;
+END;
+
+--=========================================================================================================
+

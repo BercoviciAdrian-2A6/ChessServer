@@ -11,16 +11,15 @@ public class CommandManager
 
     private CommandManager ()
     {
-        commands.add( new FriendCommand("befriend") );
         commands.add( new LoginCommand("login") );
-        commands.add( new MessageCommand("message") );
-        commands.add( new ReadCommand("read") );
+        commands.add( new LogoutCommand("logout") );
         commands.add( new RegisterCommand("register") );
         commands.add( new IdleCommand("idle") );
         commands.add( new QueueCommand("queue") );
         commands.add( new ChessMoveCommand("move") );
         commands.add( new ForfeitCommand("forfeit") );
         commands.add( new GameMessageCommand("gameMessage") );
+        commands.add( new ReplayCommand("replay") );
     }
 
     public static CommandManager getSingleton()

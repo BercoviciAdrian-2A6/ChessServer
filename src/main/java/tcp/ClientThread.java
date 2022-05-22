@@ -57,7 +57,7 @@ public class ClientThread extends Thread
         }
         catch (Exception e)
         {
-
+            e.printStackTrace();
         } finally {
             try {
                 socket.close(); // or use try-with-resources

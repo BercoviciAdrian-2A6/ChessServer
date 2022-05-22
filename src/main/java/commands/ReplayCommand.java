@@ -1,0 +1,26 @@
+package commands;
+
+import dao.MatchDAO;
+import tcp.ClientThread;
+
+import java.util.ArrayList;
+
+public class ReplayCommand extends Command
+{
+
+    protected ReplayCommand(String trigger) {
+        super(trigger);
+    }
+
+    @Override
+    protected CommandOutput runCommand(ArrayList<String> parameters, ClientThread clientThread) throws Exception
+    {
+        CommandOutput commandOutput = new CommandOutput();
+
+        int matchIndex = Integer.parseInt( parameters.get(0) );
+
+        commandOutput.setMessage(MatchDAO.getMatchReplay(matchIndex));
+
+        return commandOutput;
+    }
+}

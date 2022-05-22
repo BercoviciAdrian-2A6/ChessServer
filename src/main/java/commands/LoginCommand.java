@@ -1,9 +1,13 @@
 package commands;
 
+import Database.Singleton;
 import Entities.UserEntity;
 import dao.UserDAO;
 import tcp.ClientThread;
+import java.sql.CallableStatement;
 
+import java.sql.Connection;
+import java.sql.Types;
 import java.util.ArrayList;
 
 public class LoginCommand extends Command {
@@ -16,14 +20,25 @@ public class LoginCommand extends Command {
      * @return an authentication token
      */
     @Override
-    public CommandOutput runCommand(ArrayList<String> parameters, ClientThread clientThread) throws Exception {
+    public CommandOutput runCommand(ArrayList<String> parameters, ClientThread clientThread) throws Exception
+    {
         CommandOutput commandOutput = new CommandOutput();
-        UserEntity user = UserDAO.getUserByUsername(parameters.get(0));
 
-        if (user != null && parameters.get(1).equals(user.getPassword())) {
-            commandOutput.setMessage(user.getAuthenticationToken());
-            commandOutput.setStatus(1);
-        }
+        Connection dbConnection = Singleton.getDataBase().getConnection();
+
+        CallableStatement statement = dbConnection.prepareCall("begin ? := login(?,?); end;");
+
+        statement.registerOutParameter(1, Types.VARCHAR);
+
+        statement.setString(2, parameters.get(0) );
+
+        statement.setString(3, parameters.get(1) );
+
+        statement.execute();
+
+        commandOutput.setMessage(statement.getString(1));
+
+        statement.close();
 
         return commandOutput;
     }

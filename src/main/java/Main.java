@@ -8,12 +8,10 @@ import java.util.Scanner;
 
 public class Main
 {
-    public static void main(String[] args) throws IOException, SQLException {
-
-        UserDAO.createUser("Steve", "12345");
-
-        //Server server = new Server();
-        //server.start();
+    public static void main(String[] args) throws IOException, SQLException
+    {
+        Server server = new Server();
+        server.start();
 
         /*Chessboard chessboard = new Chessboard();
 
