@@ -20,6 +20,7 @@ public class CommandManager
         commands.add( new ForfeitCommand("forfeit") );
         commands.add( new GameMessageCommand("gameMessage") );
         commands.add( new ReplayCommand("replay") );
+        commands.add( new MatchHistoryCommand("history") );
     }
 
     public static CommandManager getSingleton()

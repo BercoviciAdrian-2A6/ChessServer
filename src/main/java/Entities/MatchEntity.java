@@ -54,4 +54,15 @@ public class MatchEntity
     public void setStart_timestamp(String start_timestamp) {
         this.start_timestamp = start_timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "MatchEntity{" +
+                "matchId=" + matchId +
+                ", whiteUser=" + whiteUser +
+                ", backUser=" + backUser +
+                ", winner=" + winner +
+                ", start_timestamp='" + start_timestamp + '\'' +
+                '}';
+    }
 }

@@ -66,16 +66,24 @@ public class MatchDAO
         return matchHistory;
     }
 
-    public List<MatchEntity> getMatchHistory(int targetPlayerId) throws SQLException
+    public static List<MatchEntity> getMatchHistory(int targetPlayerId) throws Exception
     {
         ArrayList<MatchEntity> history = new ArrayList<>();
 
         Statement statement = Singleton.getDataBase().getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery("select * from games where white_player_id = " + targetPlayerId + " or black_player_id = " + targetPlayerId + " order by start_timestamp");
-        if(resultSet.next()){
-            result =  new UserEntity( resultSet.getInt("id_user") ,resultSet.getString("username"),resultSet.getString("parola"),resultSet.getString("token"));
+        while (resultSet.next())
+        {
+            int matchId = resultSet.getInt("id_match");
+            UserEntity white = UserDAO.getUserById(resultSet.getInt("white_player_id"));
+            UserEntity black = UserDAO.getUserById(resultSet.getInt("black_player_id"));
+            UserEntity winner = UserDAO.getUserById(resultSet.getInt("winnerflag"));
+            String startTimestamp = resultSet.getString("start_timestamp");
+            history.add( new MatchEntity( matchId, white, black, winner, startTimestamp ) );
         }
 
         statement.close();
+
+        return history;
     }
 }
