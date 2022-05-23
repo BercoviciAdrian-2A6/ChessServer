@@ -1,11 +1,15 @@
 package tcp;
 
+import Entities.UserEntity;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server extends Thread {
     public static final int PORT = 8100;
+    private static volatile ArrayList<ClientThread> clientThreads = new ArrayList<>();
     ServerSocket serverSocket = null;
 
     public Server () throws IOException {
@@ -22,7 +26,9 @@ public class Server extends Thread {
             while (true)
             {
                 Socket socket = serverSocket.accept();
-                new ClientThread(socket).start();
+                ClientThread newClient = new ClientThread(socket);
+                clientThreads.add(newClient);
+                newClient.start();
 
                 if (currentThread().isInterrupted())
                     break;

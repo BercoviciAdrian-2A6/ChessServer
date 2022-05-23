@@ -24,6 +24,8 @@ public class CommandManager
         commands.add( new InviteCommand("invite") );
         commands.add( new ViewReceivedInvitesCommand("viewRecInvites") );
         commands.add( new ViewSentInvitationsCommand("viewSentInvites") );
+        commands.add( new CancelInviteCommand("cancelInvite") );
+        commands.add( new RespondInviteCommand("respondInvite") );
     }
 
     public static CommandManager getSingleton()

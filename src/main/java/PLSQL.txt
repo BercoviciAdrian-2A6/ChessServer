@@ -297,3 +297,32 @@ BEGIN
 END;
 
 --=========================================================================================================
+
+CREATE OR REPLACE FUNCTION void_invite(p_sender_username VARCHAR2, p_receiver_username VARCHAR2) RETURN INTEGER AS
+v_invite_exists INTEGER;
+v_sender_id INTEGER;
+v_receiver_id INTEGER;
+v_sender_exists INTEGER;
+v_receivier_exists INTEGER;
+BEGIN
+
+    SELECT COUNT(*) INTO v_sender_exists FROM useri WHERE username = p_sender_username;
+
+    SELECT COUNT(*) INTO v_receivier_exists FROM useri WHERE username = p_receiver_username;
+
+    IF v_receivier_exists = 0 or v_sender_exists = 0 THEN RETURN -1; END IF;
+
+    SELECT id_user INTO v_sender_id FROM useri WHERE username = p_sender_username;
+
+    SELECT id_user INTO v_receiver_id FROM useri WHERE username = p_receiver_username;
+
+    SELECT COUNT(*) INTO v_invite_exists FROM invitations WHERE sender_id = v_sender_id and receiver_id = v_receiver_id;
+
+    if v_invite_exists = 0 THEN RETURN -1; END IF;
+
+    DELETE FROM invitations where sender_id = v_sender_id and receiver_id = v_receiver_id;
+
+    RETURN 1;
+END;
+
+--=========================================================================================================

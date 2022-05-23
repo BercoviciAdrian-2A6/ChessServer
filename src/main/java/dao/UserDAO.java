@@ -47,7 +47,7 @@ public class UserDAO
         UserEntity result = null;
 
         Statement statement = Singleton.getDataBase().getConnection().createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from useri where id_user = \'" + username + "\'");
+        ResultSet resultSet = statement.executeQuery("select * from useri where username = \'" + username + "\'");
         if(resultSet.next()){
             result =  new UserEntity( resultSet.getInt("id_user") ,resultSet.getString("username"),resultSet.getString("parola"),resultSet.getString("token"));
         }
