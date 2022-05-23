@@ -230,9 +230,10 @@ END;
 
 --=========================================================================================================
 
-CREATE OR REPLACE FUNCTION get_active_invitations(p_token VARCHAR2) RETURN VARCHAR2 AS
+CREATE OR REPLACE FUNCTION get_received_invitations(p_token VARCHAR2) RETURN VARCHAR2 AS
 v_receiver_id INTEGER;
 v_is_in_game INTEGER;
+v_is_logged_in INTEGER;
 v_invitations VARCHAR2(1000);
 v_sender_username VARCHAR2(50);
 BEGIN
@@ -241,13 +242,53 @@ BEGIN
     FOR v_i IN (SELECT * FROM invitations WHERE v_receiver_id = receiver_id) LOOP
         SELECT COUNT(*) INTO v_is_in_game from games WHERE (v_i.sender_id = white_player_id or v_i.sender_id = black_player_id) and duration_seconds IS NULL;
 
+        SELECT COUNT(*) INTO v_is_logged_in FROM useri WHERE v_i.sender_id = id_user AND token is not null;
+
         SELECT username INTO v_sender_username FROM useri where id_user = v_i.sender_id;
 
         v_invitations :=concat(v_invitations, v_sender_username);
-        v_invitations :=concat(v_invitations, '/');
+        v_invitations :=concat(v_invitations, '-');
 
-        if v_is_in_game = 0 THEN v_invitations :=concat(v_invitations, 'AVAILABLE');
-        ELSE v_invitations :=concat(v_invitations, 'INGAME');
+        if v_is_logged_in = 0 THEN
+            v_invitations :=concat(v_invitations, 'OFFLINE');
+        ELSIF v_is_in_game = 0 THEN
+            v_invitations :=concat(v_invitations, 'AVAILABLE');
+        ELSE
+            v_invitations :=concat(v_invitations, 'INGAME');
+        END IF;
+        v_invitations :=concat(v_invitations, '/');
+    END LOOP;
+
+    RETURN v_invitations;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE FUNCTION get_sent_invitations(p_token VARCHAR2) RETURN VARCHAR2 AS
+v_sender_id INTEGER;
+v_is_in_game INTEGER;
+v_is_logged_in INTEGER;
+v_invitations VARCHAR2(1000);
+v_receiver_username VARCHAR2(50);
+BEGIN
+    SELECT id_user INTO v_sender_id FROM useri WHERE p_token = token;
+
+    FOR v_i IN (SELECT * FROM invitations WHERE v_sender_id = sender_id) LOOP
+        SELECT COUNT(*) INTO v_is_in_game from games WHERE (v_i.receiver_id = white_player_id or v_i.receiver_id = black_player_id) and duration_seconds IS NULL;
+
+        SELECT COUNT(*) INTO v_is_logged_in FROM useri WHERE v_i.receiver_id = id_user AND token is not null;
+
+        SELECT username INTO v_receiver_username FROM useri where id_user = v_i.receiver_id;
+
+        v_invitations :=concat(v_invitations, v_receiver_username);
+        v_invitations :=concat(v_invitations, '-');
+
+        if v_is_logged_in = 0 THEN
+            v_invitations :=concat(v_invitations, 'OFFLINE');
+        ELSIF v_is_in_game = 0 THEN
+            v_invitations :=concat(v_invitations, 'AVAILABLE');
+        ELSE
+            v_invitations :=concat(v_invitations, 'INGAME');
         END IF;
         v_invitations :=concat(v_invitations, '/');
     END LOOP;

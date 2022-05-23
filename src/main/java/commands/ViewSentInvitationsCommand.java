@@ -8,9 +8,11 @@ import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
 
-public class ViewInvitesCommand extends Command
+public class ViewSentInvitationsCommand extends Command
 {
-    protected ViewInvitesCommand(String trigger) {
+
+    protected ViewSentInvitationsCommand(String trigger)
+    {
         super(trigger);
     }
 
@@ -24,7 +26,7 @@ public class ViewInvitesCommand extends Command
 
         Connection dbConnection = Singleton.getDataBase().getConnection();
 
-        CallableStatement statement = dbConnection.prepareCall("begin ? := get_active_invitations(?); end;");
+        CallableStatement statement = dbConnection.prepareCall("begin ? := get_sent_invitations(?); end;");
 
         statement.registerOutParameter(1, Types.VARCHAR);
 
