@@ -219,7 +219,8 @@ BEGIN
 
     if v_sender_id = v_receiver_id THEN RETURN -2; END IF;
 
-    SELECT COUNT(*) INTO v_invitation_already_exists FROM invitations WHERE v_sender_id = sender_id AND v_receiver_id = receiver_id;
+    SELECT COUNT(*) INTO v_invitation_already_exists FROM invitations WHERE
+    (v_sender_id = sender_id AND v_receiver_id = receiver_id) or (v_receiver_id = sender_id AND v_sender_id = receiver_id);
 
     if v_invitation_already_exists > 0 THEN RETURN 0; END IF;
 
