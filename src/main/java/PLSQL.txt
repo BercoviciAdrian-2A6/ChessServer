@@ -22,6 +22,12 @@ move_string VARCHAR2(10),
 move_duration_seconds NUMBER,
 PRIMARY KEY(id_match, id_player, absolute_move_index));
 
+CREATE TABLE invitations(
+    sender_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    PRIMARY KEY (sender_id, receiver_id)
+);
+
 --=========================================================================================================
 
 CREATE SEQUENCE user_seq START WITH 1;
@@ -121,24 +127,17 @@ END;
 
 --=========================================================================================================
 
-CREATE OR REPLACE FUNCTION logout(p_username VARCHAR2, p_parola VARCHAR2) RETURN VARCHAR2
+CREATE OR REPLACE FUNCTION logout(p_token VARCHAR2) RETURN INTEGER
 AS
-  v_are_cont INTEGER;
-  v_token VARCHAR2(10);
-  v_e_logat INTEGER;
+  v_user_exists INTEGER;
 BEGIN
-  SELECT count(*) INTO v_are_cont FROM useri WHERE TRIM(username)=TRIM(p_username) AND TRIM(parola)=TRIM(p_parola);
-  IF(v_are_cont=1) THEN
-    SELECT count(*) INTO v_e_logat FROM useri WHERE token is not null AND TRIM(username)=TRIM(p_username) AND TRIM(parola)=TRIM(p_parola);
-    IF(v_e_logat=1) THEN    --este logat
-      UPDATE useri SET token=null WHERE TRIM(username)=TRIM(p_username) AND TRIM(parola)=TRIM(p_parola);
-      RETURN 'Logout efectuat cu succes!';
-    ELSE
-        RETURN 'Acest cont nu este logat!'; --iese fortat din functie si returneaza mesajul respectiv
-    END IF;
-  ELSE
-    RETURN 'Nu exista acest cont!';
-  END IF;
+  SELECT count(*) INTO v_user_exists FROM useri WHERE p_token = token;
+
+  if v_user_exists = 0 THEN RETURN -1; END IF;
+
+  UPDATE useri SET token=null WHERE p_token = token;
+
+  RETURN 1;
 END;
 
 --=========================================================================================================
@@ -202,3 +201,58 @@ END;
 
 --=========================================================================================================
 
+CREATE OR REPLACE FUNCTION place_invitation( p_sender_username VARCHAR2, p_receiver_username VARCHAR2 ) RETURN INTEGER AS
+v_sender_exists INTEGER;
+v_receiver_exists INTEGER;
+v_sender_id INTEGER;
+v_receiver_id INTEGER;
+v_invitation_already_exists INTEGER;
+BEGIN
+
+    SELECT COUNT(*) INTO v_sender_exists FROM useri WHERE p_sender_username = username;
+    SELECT COUNT(*) INTO v_receiver_exists FROM useri WHERE p_receiver_username = username;
+
+    if v_sender_exists = 0 or v_receiver_exists = 0 THEN RETURN -1; END IF;
+
+    SELECT id_user INTO v_sender_id FROM useri WHERE p_sender_username = username;
+    SELECT id_user INTO v_receiver_id FROM useri WHERE p_receiver_username = username;
+
+    if v_sender_id = v_receiver_id THEN RETURN -2; END IF;
+
+    SELECT COUNT(*) INTO v_invitation_already_exists FROM invitations WHERE v_sender_id = sender_id AND v_receiver_id = receiver_id;
+
+    if v_invitation_already_exists > 0 THEN RETURN 0; END IF;
+
+    INSERT INTO invitations (sender_id, receiver_id) VALUES (v_sender_id, v_receiver_id);
+
+    RETURN 1;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE FUNCTION get_active_invitations(p_token VARCHAR2) RETURN VARCHAR2 AS
+v_receiver_id INTEGER;
+v_is_in_game INTEGER;
+v_invitations VARCHAR2(1000);
+v_sender_username VARCHAR2(50);
+BEGIN
+    SELECT id_user INTO v_receiver_id FROM useri WHERE p_token = token;
+
+    FOR v_i IN (SELECT * FROM invitations WHERE v_receiver_id = receiver_id) LOOP
+        SELECT COUNT(*) INTO v_is_in_game from games WHERE (v_i.sender_id = white_player_id or v_i.sender_id = black_player_id) and duration_seconds IS NULL;
+
+        SELECT username INTO v_sender_username FROM useri where id_user = v_i.sender_id;
+
+        v_invitations :=concat(v_invitations, v_sender_username);
+        v_invitations :=concat(v_invitations, '/');
+
+        if v_is_in_game = 0 THEN v_invitations :=concat(v_invitations, 'AVAILABLE');
+        ELSE v_invitations :=concat(v_invitations, 'INGAME');
+        END IF;
+        v_invitations :=concat(v_invitations, '/');
+    END LOOP;
+
+    RETURN v_invitations;
+END;
+
+--=========================================================================================================

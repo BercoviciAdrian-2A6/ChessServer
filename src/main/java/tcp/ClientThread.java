@@ -1,7 +1,9 @@
 package tcp;
 
+import Entities.UserEntity;
 import commands.CommandManager;
 import commands.CommandOutput;
+import dao.UserDAO;
 import game.GameRoom;
 
 import java.io.BufferedReader;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ClientThread extends Thread
@@ -16,6 +19,7 @@ public class ClientThread extends Thread
     private Socket socket = null;
     private GameRoom gameRoom;
     volatile ArrayList<String> responseQueue = new ArrayList<>();
+    UserEntity loggedInUser;
 
     public ClientThread (Socket socket)
     {
@@ -64,6 +68,14 @@ public class ClientThread extends Thread
             } catch (IOException e) { System.err.println (e); }
         }
 
+        try
+        {
+            UserDAO.logoutUser(loggedInUser);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
         System.out.println("Connection to client ended");
     }
 
@@ -80,5 +92,11 @@ public class ClientThread extends Thread
     public void queueResponse(String response)
     {
         responseQueue.add( response );
+    }
+
+    public void setLoggedInUser(UserEntity loggedInUser)
+    {
+        this.loggedInUser = loggedInUser;
+        System.out.println(loggedInUser.getUsername() +  " has logged in!");
     }
 }

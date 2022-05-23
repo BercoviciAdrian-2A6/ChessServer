@@ -21,6 +21,8 @@ public class CommandManager
         commands.add( new GameMessageCommand("gameMessage") );
         commands.add( new ReplayCommand("replay") );
         commands.add( new MatchHistoryCommand("history") );
+        commands.add( new InviteCommand("invite") );
+        commands.add( new ViewInvitesCommand("viewInvites") );
     }
 
     public static CommandManager getSingleton()

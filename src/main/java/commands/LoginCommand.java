@@ -40,6 +40,8 @@ public class LoginCommand extends Command {
 
         statement.close();
 
+        clientThread.setLoggedInUser( UserDAO.getUserByAuthenticationToken(commandOutput.getMessage()) );
+
         return commandOutput;
     }
 }
