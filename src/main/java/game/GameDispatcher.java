@@ -34,5 +34,20 @@ public class GameDispatcher
         return queuedRoom;
     }
 
+    public int dequeue(UserEntity user, ClientThread clientThread)
+    {
+        if (queuedRoom == null || user == null)
+            return 0;
+
+        if (user.getUsername().equals(queuedRoom.getPlayerOne().getUsername()))
+        {
+            clientThread.setGameRoom(null);
+            queuedRoom = null;
+            return 1;
+        }
+
+        return 0;
+    }
+
 
 }

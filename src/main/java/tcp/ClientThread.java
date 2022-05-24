@@ -4,6 +4,7 @@ import Entities.UserEntity;
 import commands.CommandManager;
 import commands.CommandOutput;
 import dao.UserDAO;
+import game.GameDispatcher;
 import game.GameRoom;
 
 import java.io.BufferedReader;
@@ -77,6 +78,7 @@ public class ClientThread extends Thread
         }
         System.out.println("Connection to client ended");
 
+        GameDispatcher.getInstance().dequeue(loggedInUser, this);
         setGameRoom(null);
         setLoggedInUser(null);
     }

@@ -1,5 +1,6 @@
 package commands;
 
+import game.GameDispatcher;
 import tcp.ClientThread;
 
 import java.util.ArrayList;
@@ -14,6 +15,22 @@ public class DequeueCommand extends Command
     @Override
     protected CommandOutput runCommand(ArrayList<String> parameters, ClientThread clientThread) throws Exception
     {
-        return null;
+
+        int dequeueStatus = GameDispatcher.getInstance().dequeue(getSender(), clientThread);
+
+        if (dequeueStatus == 1)
+        {
+            CommandOutput dequeueSuccessful = new CommandOutput();
+
+            dequeueSuccessful.setMessage("Dequeued succesfully");
+
+            return dequeueSuccessful;
+        }
+
+        CommandOutput dequeueFailed = new CommandOutput();
+
+        dequeueFailed.setMessage("Dequeue failed");
+
+        return dequeueFailed;
     }
 }

@@ -44,17 +44,6 @@ CREATE SEQUENCE game_seq START WITH 1;
 
 --=========================================================================================================
 
-CREATE OR REPLACE TRIGGER user_trigger
-BEFORE INSERT ON useri 
-FOR EACH ROW
-BEGIN
-  SELECT user_seq.NEXTVAL 
-  INTO   :new.id_user
-  FROM   dual;
-END;
-
---=========================================================================================================
-
 CREATE OR REPLACE FUNCTION register (p_username in VARCHAR2, p_parola in VARCHAR2) RETURN INTEGER
 AS
  v_newId INTEGER;
@@ -73,31 +62,6 @@ BEGIN
   INSERT INTO useri( id_user, username, parola, token ) VALUES (v_newId, p_username, p_parola, NULL);
   
   RETURN 1;
-END;
-
---=========================================================================================================
-
-CREATE DIRECTORY DIR__GAME AS 'C:\Users\adria\Desktop\Sah';
-
-CREATE OR REPLACE PROCEDURE adauga_utilizatori_din_fisier
-AS
-  v_fisier UTL_FILE.FILE_TYPE;
-  v_utilizator VARCHAR2(200);
-  v_nume_utilizator VARCHAR2(200);
-  v_parola VARCHAR2(200);
-BEGIN
-  v_fisier:=UTL_FILE.FOPEN('DIR__GAME','users.txt','R');
-  LOOP
-    BEGIN
-      UTL_FILE.GET_LINE(v_fisier,v_utilizator);
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN EXIT;
-    END;
-      v_nume_utilizator:=SUBSTR(v_utilizator, 0 ,INSTR(v_utilizator,' ', 1, 1)-1);
-      v_parola:=SUBSTR(v_utilizator ,INSTR(v_utilizator,' ', 1, 1)+1);
-      INSERT INTO useri (username, parola) VALUES (v_nume_utilizator, v_parola);
-  END LOOP;
-  UTL_FILE.FCLOSE(v_fisier);
 END;
 
 --=========================================================================================================
