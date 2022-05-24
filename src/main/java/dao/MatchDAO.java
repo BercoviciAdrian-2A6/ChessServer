@@ -86,4 +86,15 @@ public class MatchDAO
 
         return history;
     }
+
+    public static void assureGameIntegrity() throws SQLException
+    {
+        Connection dbConnection = Singleton.getDataBase().getConnection();
+
+        CallableStatement statement = dbConnection.prepareCall("begin assure_games_integrity; end;");
+
+        statement.execute();
+
+        statement.close();
+    }
 }

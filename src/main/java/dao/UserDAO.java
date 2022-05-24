@@ -83,5 +83,10 @@ public class UserDAO
         return 1;
     }
 
-
+    public static void logoutAll() throws SQLException
+    {
+        Statement statement = Singleton.getDataBase().getConnection().createStatement();
+        statement.executeQuery("UPDATE useri SET token = null");
+        statement.close();
+    }
 }

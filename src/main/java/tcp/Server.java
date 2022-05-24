@@ -1,10 +1,13 @@
 package tcp;
 
 import Entities.UserEntity;
+import dao.MatchDAO;
+import dao.UserDAO;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Server extends Thread {
@@ -19,6 +22,15 @@ public class Server extends Thread {
 
     public void run()
     {
+        try
+        {
+            MatchDAO.assureGameIntegrity();
+            UserDAO.logoutAll();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
         try {
             System.out.println("Server is waiting for connections");
@@ -46,7 +58,7 @@ public class Server extends Thread {
                 }
                 catch (IOException e)
                 {
-                        e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
         }

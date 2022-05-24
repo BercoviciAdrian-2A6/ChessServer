@@ -11,7 +11,10 @@ white_player_id INTEGER,
 black_player_id INTEGER, 
 winnerflag INTEGER, 
 start_timestamp VARCHAR2(30) NOT NULL,
-duration_seconds INTEGER);
+duration_seconds INTEGER,
+FOREIGN KEY(white_player_id) references useri(id_user),
+FOREIGN KEY(black_player_id) references useri(id_user)
+)
 
 CREATE TABLE moves (
 id_match INTEGER,
@@ -20,12 +23,17 @@ absolute_move_index INTEGER,
 relative_move_index INTEGER not null,
 move_string VARCHAR2(10),
 move_duration_seconds NUMBER,
-PRIMARY KEY(id_match, id_player, absolute_move_index));
+PRIMARY KEY(id_match, id_player, absolute_move_index),
+FOREIGN KEY(id_match) references games(id_match),
+FOREIGN KEY(id_player) references useri(id_user)
+);
 
 CREATE TABLE invitations(
     sender_id INTEGER NOT NULL,
     receiver_id INTEGER NOT NULL,
-    PRIMARY KEY (sender_id, receiver_id)
+    PRIMARY KEY (sender_id, receiver_id),
+    FOREIGN KEY(sender_id) references useri(id_user),
+    FOREIGN KEY(receiver_id) references useri(id_user)
 );
 
 --=========================================================================================================
@@ -197,6 +205,31 @@ BEGIN
         v_moves:=concat(v_moves, '/');
     END LOOP;
     RETURN v_moves;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE FUNCTION compute_game_duration(p_id_mach INTEGER) RETURN INTEGER AS
+v_total_move_duration NUMBER:= 0;
+BEGIN
+        for v_i IN (SELECT * FROM moves where id_match = p_id_mach) LOOP
+            v_total_move_duration := v_total_move_duration + v_i.move_duration_seconds;
+        END LOOP;
+
+        RETURN v_total_move_duration;
+END;
+
+--=========================================================================================================
+
+CREATE OR REPLACE PROCEDURE assure_games_integrity AS
+v_total_move_duration INTEGER;
+v_id_match INTEGER;
+BEGIN
+    FOR v_i IN (SELECT * FROM games WHERE duration_seconds IS NULL) LOOP
+        v_id_match := v_i.id_match;
+        v_total_move_duration := compute_game_duration(v_id_match);
+        UPDATE games SET winnerflag = -1, duration_seconds = v_total_move_duration WHERE id_match = v_id_match;
+    END LOOP;
 END;
 
 --=========================================================================================================

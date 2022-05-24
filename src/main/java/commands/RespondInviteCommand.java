@@ -38,6 +38,7 @@ public class RespondInviteCommand extends Command
                 return userInGame;
             }
 
+            InviteDAO.voidInvite(originalSender.getUsername(), getSender().getUsername());
             GameRoom invitationRoom = new GameRoom(originalSender, originalSenderThread);
             invitationRoom.setPlayerTwo( getSender(), clientThread );
 

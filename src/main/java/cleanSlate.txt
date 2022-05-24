@@ -1,0 +1,53 @@
+DROP TABLE invitations;
+DROP TABLE MOVES;
+DROP TABLE GAMES;
+DROP TABLE USERI;
+
+drop SEQUENCE user_seq;
+drop SEQUENCE game_seq;
+
+CREATE SEQUENCE user_seq START WITH 1;
+
+CREATE SEQUENCE game_seq START WITH 1;
+
+CREATE TABLE useri (
+id_user INTEGER PRIMARY KEY,
+username VARCHAR2(100) UNIQUE NOT NULL,
+parola VARCHAR2(100) NOT NULL,
+token VARCHAR2(10));
+
+CREATE TABLE games (
+id_match INTEGER PRIMARY KEY,
+white_player_id INTEGER,
+black_player_id INTEGER,
+winnerflag INTEGER,
+start_timestamp VARCHAR2(30) NOT NULL,
+duration_seconds INTEGER,
+FOREIGN KEY(white_player_id) references useri(id_user),
+FOREIGN KEY(black_player_id) references useri(id_user)
+)
+
+CREATE TABLE moves (
+id_match INTEGER,
+id_player INTEGER,
+absolute_move_index INTEGER,
+relative_move_index INTEGER not null,
+move_string VARCHAR2(10),
+move_duration_seconds NUMBER,
+PRIMARY KEY(id_match, id_player, absolute_move_index),
+FOREIGN KEY(id_match) references games(id_match),
+FOREIGN KEY(id_player) references useri(id_user)
+);
+
+CREATE TABLE invitations(
+    sender_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    PRIMARY KEY (sender_id, receiver_id),
+    FOREIGN KEY(sender_id) references useri(id_user),
+    FOREIGN KEY(receiver_id) references useri(id_user)
+);
+
+select * from useri;
+select * from GAMES;
+select * from moves;
+select * from invitations;
