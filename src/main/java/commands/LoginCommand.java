@@ -11,8 +11,11 @@ import java.sql.Types;
 import java.util.ArrayList;
 
 public class LoginCommand extends Command {
-    public LoginCommand(String trigger) {
+    public LoginCommand(String trigger)
+    {
         super(trigger);
+        requiresAuthentication = false;
+        requiredParameters = 2;
     }
 
     /**
@@ -36,11 +39,13 @@ public class LoginCommand extends Command {
 
         statement.execute();
 
-        commandOutput.setMessage(statement.getString(1));
+        String token = statement.getString(1);
+
+        commandOutput.setMessage("#@Tkn%" + token);
 
         statement.close();
 
-        clientThread.setLoggedInUser( UserDAO.getUserByAuthenticationToken(commandOutput.getMessage()) );
+        clientThread.setLoggedInUser( UserDAO.getUserByAuthenticationToken( token ) );
 
         return commandOutput;
     }

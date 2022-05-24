@@ -32,7 +32,6 @@ public class ClientThread extends Thread
         try {
             while (true)
             {
-
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String clientRequest = in.readLine();
 
@@ -61,7 +60,7 @@ public class ClientThread extends Thread
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally {
             try {
                 socket.close(); // or use try-with-resources
@@ -77,6 +76,9 @@ public class ClientThread extends Thread
             e.printStackTrace();
         }
         System.out.println("Connection to client ended");
+
+        setGameRoom(null);
+        setLoggedInUser(null);
     }
 
     public GameRoom getGameRoom()
@@ -97,7 +99,9 @@ public class ClientThread extends Thread
     public void setLoggedInUser(UserEntity loggedInUser)
     {
         this.loggedInUser = loggedInUser;
-        System.out.println(loggedInUser.getUsername() +  " has logged in!");
+
+        if (loggedInUser != null)
+            System.out.println(loggedInUser.getUsername() +  " has logged in!");
     }
 
     public UserEntity getLoggedInUser()

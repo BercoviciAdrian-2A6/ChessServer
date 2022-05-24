@@ -8,6 +8,7 @@ public class IdleCommand extends Command
 {
     protected IdleCommand(String trigger) {
         super(trigger);
+        requiresAuthentication = false;
     }
 
     @Override

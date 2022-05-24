@@ -14,6 +14,7 @@ public class InviteCommand extends Command
 {
     protected InviteCommand(String trigger) {
         super(trigger);
+        requiredParameters = 1;
     }
 
     @Override

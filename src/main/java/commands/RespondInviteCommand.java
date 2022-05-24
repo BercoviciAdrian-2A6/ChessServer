@@ -13,6 +13,7 @@ public class RespondInviteCommand extends Command
 {
     protected RespondInviteCommand(String trigger) {
         super(trigger);
+        requiredParameters = 2;
     }
 
     @Override

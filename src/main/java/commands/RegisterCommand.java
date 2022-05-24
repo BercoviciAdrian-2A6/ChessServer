@@ -15,6 +15,8 @@ public class RegisterCommand extends Command
     public RegisterCommand(String trigger)
     {
         super(trigger);
+        requiresAuthentication = false;
+        requiredParameters = 2;
     }
 
     /**

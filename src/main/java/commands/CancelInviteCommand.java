@@ -10,6 +10,7 @@ public class CancelInviteCommand extends Command
 
     protected CancelInviteCommand(String trigger) {
         super(trigger);
+        requiredParameters = 1;
     }
 
     @Override

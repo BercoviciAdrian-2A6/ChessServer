@@ -10,6 +10,7 @@ public class ChessMoveCommand extends Command
 {
     protected ChessMoveCommand(String trigger) {
         super(trigger);
+        requiredParameters = 1;
     }
 
     /**
@@ -40,6 +41,8 @@ public class ChessMoveCommand extends Command
         GameRoom gameRoom = clientThread.getGameRoom();
 
         ChessColor activePlayerColor = gameRoom.getRoundOwnerColor();
+
+        parameters.set(0, parameters.get(0).toUpperCase());
 
         int moveStatus = gameRoom.getChessboard().movePiece(parameters.get(0), activePlayerColor);
 

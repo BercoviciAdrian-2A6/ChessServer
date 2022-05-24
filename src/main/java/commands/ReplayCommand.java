@@ -10,6 +10,7 @@ public class ReplayCommand extends Command
 
     protected ReplayCommand(String trigger) {
         super(trigger);
+        requiredParameters = 1;
     }
 
     @Override

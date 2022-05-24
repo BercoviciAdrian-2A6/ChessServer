@@ -58,6 +58,11 @@ public class UserDAO
 
     public static int logoutUser(UserEntity user) throws SQLException
     {
+        if (user == null)
+            return -1;
+
+        System.out.println("trying to log out user:" + user.getUsername());
+
         Connection dbConnection = Singleton.getDataBase().getConnection();
 
         CallableStatement statement = dbConnection.prepareCall("begin ? := logout(?); end;");
