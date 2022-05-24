@@ -99,4 +99,9 @@ public class ClientThread extends Thread
         this.loggedInUser = loggedInUser;
         System.out.println(loggedInUser.getUsername() +  " has logged in!");
     }
+
+    public UserEntity getLoggedInUser()
+    {
+        return loggedInUser;
+    }
 }

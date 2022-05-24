@@ -53,4 +53,18 @@ public class Server extends Thread {
 
         System.out.println("Server has shut down");
     }
+
+    public static ClientThread getClientThreadByUser(UserEntity user)
+    {
+        for (ClientThread thread : clientThreads)
+        {
+            if (thread == null)
+                continue;
+
+            if (thread.getLoggedInUser().getUsername().equals( user.getUsername() ))
+                return thread;
+        }
+
+        return null;
+    }
 }

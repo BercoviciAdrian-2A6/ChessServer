@@ -3,7 +3,9 @@ package commands;
 import Entities.UserEntity;
 import dao.InviteDAO;
 import dao.UserDAO;
+import game.GameRoom;
 import tcp.ClientThread;
+import tcp.Server;
 
 import java.util.ArrayList;
 
@@ -20,6 +22,35 @@ public class RespondInviteCommand extends Command
 
         if (parameters.get(1).equals("y"))
         {
+            ClientThread originalSenderThread = Server.getClientThreadByUser(originalSender);
+
+            if (originalSenderThread == null)
+            {
+                CommandOutput userNotLoggedIn = new CommandOutput();
+                userNotLoggedIn.setMessage("User is not logged in!");
+                return userNotLoggedIn;
+            }
+
+            if (originalSenderThread.getGameRoom() != null)
+            {
+                CommandOutput userInGame = new CommandOutput();
+                userInGame.setMessage("User is ingame!");
+                return userInGame;
+            }
+
+            GameRoom invitationRoom = new GameRoom(originalSender, originalSenderThread);
+            invitationRoom.setPlayerTwo( getSender(), clientThread );
+
+            originalSenderThread.setGameRoom(invitationRoom);
+            clientThread.setGameRoom(invitationRoom);
+
+            invitationRoom.start();
+
+            CommandOutput commandOutput = new CommandOutput();
+
+            commandOutput.setMessage("GAME IS ABOUT TO START!");
+
+            return commandOutput;
 
         }
         else if (parameters.get(1).equals("n"))

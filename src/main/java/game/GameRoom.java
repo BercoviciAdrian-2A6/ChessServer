@@ -148,12 +148,14 @@ public class GameRoom extends Thread
         if (p1Thread != null && p1Thread.isAlive())
         {
             p1Thread.queueResponse("The game has ended");
+            p1Thread.setGameRoom(null);
             p1Thread.queueResponse(endGameMessage);
         }
 
         if (p2Thread != null && p2Thread.isAlive())
         {
             p2Thread.queueResponse("The game has ended");
+            p2Thread.setGameRoom(null);
             p2Thread.queueResponse(endGameMessage);
         }
 
