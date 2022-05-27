@@ -57,6 +57,9 @@ public class ClientThread extends Thread
                 String serverResponse = commandOutput.getMessage();
                 out.println(serverResponse);
                 out.flush();
+
+                if (commandOutput.getMessage().equals("@Exit0"))
+                    break;
             }
         }
         catch (Exception e)

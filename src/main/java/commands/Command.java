@@ -22,6 +22,8 @@ public abstract class Command
         if (!trigger.equalsIgnoreCase( this.trigger ))
             return null;
 
+        //System.out.println(trigger + " asda w");
+
         if (senderAuthenticationToken != "NULL")
             this.sender = UserDAO.getUserByAuthenticationToken(senderAuthenticationToken);
         else
