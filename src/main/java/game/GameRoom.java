@@ -35,6 +35,12 @@ public class GameRoom extends Thread
     ArrayList<String> messageAuthor = new ArrayList<>();
     ArrayList<String> messages = new ArrayList<>();
 
+    ArrayList<String> appliedMoves = new ArrayList<>();
+    String timersString;
+    String endGameMessage = null;
+    ArrayList<UserEntity> winner = new ArrayList<>();//chess matches can end in a draw, idk if this is the best representation but w/e
+
+
     public GameRoom ( UserEntity playerOne, ClientThread playerThread )
     {
         this.playerOne = playerOne;
@@ -84,7 +90,6 @@ public class GameRoom extends Thread
 
         setRoundBeginNano();
 
-        ArrayList<UserEntity> winner = new ArrayList<>();//chess matches can end in a draw, idk if this is the best representation but w/e
 
         p1Thread.queueResponse(NEW_TURN_STRING);
 
@@ -114,6 +119,9 @@ public class GameRoom extends Thread
                 p2currentRemaining -= getRoundEtmr();
             }
 
+            timersString = playerOne.getUsername() + "-" + p1currentRemaining + "&"
+                    + playerTwo.getUsername() + "-" + p2currentRemaining;
+
             if (p1currentRemaining <= 0)
                 winner.add( playerTwo );
 
@@ -130,8 +138,6 @@ public class GameRoom extends Thread
 
             //System.out.println(p1currentRemaining + " - " + p2currentRemaining);
         }
-
-        String endGameMessage = "";
 
         int winnerFlag = -1;
 
@@ -179,6 +185,7 @@ public class GameRoom extends Thread
     public void changeRoundOwner(String moveString) throws SQLException
     {
         logRound(roundOwner, moveString);
+        appliedMoves.add(moveString);
 
         if (roundOwner == playerOne)
         {
@@ -235,6 +242,56 @@ public class GameRoom extends Thread
     {
         messageAuthor.add(authorUsername);
         messages.add(messageContent);
+    }
+
+    public String getBoardStatus()
+    {
+        String stat = "";
+        stat += "%T%" + timersString;
+
+        stat += "%R-" + appliedMoves.size() + "%";
+
+        if (appliedMoves.size() == 0)
+            stat += "nomoves";
+
+        for (int moveIndex = 0; moveIndex < appliedMoves.size(); moveIndex++)
+        {
+            stat += appliedMoves.get(moveIndex);
+
+            if (moveIndex < appliedMoves.size() - 1)
+                stat += "&";
+        }
+
+        stat += "%M-" + messages.size() + "%";
+
+        if (messages.size() == 0)
+            stat += "nomessages";
+
+        for (int messageIndex = 0; messageIndex < messages.size(); messageIndex++)
+        {
+            stat += messageAuthor.get(messageIndex) + "-" + messages.get(messageIndex);
+
+            if (messageIndex < messages.size() - 1)
+            {
+                stat += "&";
+            }
+        }
+
+        /*stat += "%S-";
+
+        if (winner == null || winner.size() == 0)
+            stat += "inprogress%-";
+        else
+        {
+            stat += "ended%";
+
+            if (winner.size() == 1)
+                stat += "W-" + winner.get(0).getUsername();
+            else
+                stat += "D";
+        }*/
+
+        return stat;
     }
 
     void debugPrintMessages()
