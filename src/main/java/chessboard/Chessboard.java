@@ -1,6 +1,7 @@
 package chessboard;
 
 import chessboard.pieces.ChessPiece;
+import commands.CommandOutput;
 
 
 import java.util.ArrayList;
@@ -198,6 +199,30 @@ public class Chessboard
             return null;
 
         return board[i][j];
+    }
+
+    public String getAvailableMoves(String move)
+    {
+        String parseMove[] = move.split("-");
+
+        ArrayList<Integer> startIJ = fieldCodeToCoordinates(parseMove[0]);
+
+        int startI = startIJ.get(0);
+        int startJ = startIJ.get(1);
+
+        ChessPiece movedPiece = board[ startI ][ startJ ].getChessPiece();
+
+        ArrayList<ChessField> validMoves = movedPiece.availableMoves();
+
+        String allAvailable = "";
+
+        for ( ChessField field: validMoves )
+        {
+            allAvailable += field.getFieldName();
+        }
+
+
+        return allAvailable;
     }
 
     public void debugPrintChessboard()

@@ -29,6 +29,7 @@ public class CommandManager
         commands.add( new DequeueCommand("dequeue") );
         commands.add( new ExitCommand("exit") );
         commands.add( new BoardStatusCommand("boardStatus") );
+        commands.add( new AvailableMovesCommand("availableMoves") );
     }
 
     public static CommandManager getSingleton()

@@ -8,6 +8,7 @@ public class ChessField
     private int coordinateI, coordinateJ;
     private ChessColor fieldColor;
     private ChessPiece chessPiece = null;
+    private String fieldName;
 
     public ChessField( Chessboard chessboard, int i, int j, ChessColor fieldColor)
     {
@@ -15,6 +16,9 @@ public class ChessField
         coordinateI = i;
         coordinateJ = j;
         this.fieldColor = fieldColor;
+        fieldName = "";
+        fieldName += (char)('A' + j);
+        fieldName += (8 - i + 1);
     }
 
     public ChessColor getFieldColor() {
@@ -39,5 +43,9 @@ public class ChessField
 
     public int getCoordinateJ() {
         return coordinateJ;
+    }
+
+    public String getFieldName() {
+        return fieldName;
     }
 }

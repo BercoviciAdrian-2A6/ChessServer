@@ -4,6 +4,7 @@ import Database.Singleton;
 import Entities.MatchEntity;
 import Entities.UserEntity;
 
+import javax.print.DocFlavor;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,5 +97,44 @@ public class MatchDAO
         statement.execute();
 
         statement.close();
+    }
+
+    public static String getAllMatches(UserEntity user) throws Exception
+    {
+       int playerId = user.getId();
+
+        Statement statement = Singleton.getDataBase().getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from games where (white_player_id = " + playerId +
+                "or black_player_id = " + playerId + ") and winnerflag is not null order by start_timestamp");
+
+        String concat = "";
+
+        while (resultSet.next())
+        {
+            concat += "#";
+            int idMatch = resultSet.getInt("id_match");
+            int whiteId = resultSet.getInt("white_player_id");
+            UserEntity whitePlayer = UserDAO.getUserById(whiteId);
+            int blackId = resultSet.getInt("black_player_id");
+            UserEntity blackPlayer = UserDAO.getUserById(blackId);
+            int winnerFlag = resultSet.getInt("winnerflag");
+            String startTimestamp = resultSet.getString("start_timestamp");
+            int duration = resultSet.getInt("duration_seconds");
+            concat += "id:" + idMatch + "/";
+            concat += "p1:" + whitePlayer.getUsername() + "/";
+            concat += "p2:" + blackPlayer.getUsername() + "/";
+            concat += "st:" + startTimestamp + "/";
+            concat += "d:" + duration + "/";
+            if (winnerFlag == -1)
+                concat += "gs:draw";
+            else
+            {
+                UserEntity winner = UserDAO.getUserById(winnerFlag);
+                concat += "gs:" + winner.getUsername();
+            }
+        }
+
+        statement.close();
+        return concat;
     }
 }

@@ -17,27 +17,10 @@ public class MatchHistoryCommand extends Command
     @Override
     protected CommandOutput runCommand(ArrayList<String> parameters, ClientThread clientThread) throws Exception
     {
-        if (getSender() == null)
-            return null;
+        CommandOutput history = new CommandOutput();
 
-        CommandOutput output = new CommandOutput();
+        history.setMessage( MatchDAO.getAllMatches(getSender()) );
 
-        String historyMatchesId = "";
-
-        List<MatchEntity> history = MatchDAO.getMatchHistory( getSender().getId() );
-
-        for (int matchIndex = 0; matchIndex < history.size(); matchIndex++)
-        {
-            historyMatchesId += history.get(matchIndex).getMatchId();
-
-            System.out.println(history.get(matchIndex));
-
-            if ( matchIndex != history.size() - 1)
-                historyMatchesId += "/";
-        }
-
-        output.setMessage(historyMatchesId);
-
-        return output;
+        return history;
     }
 }
