@@ -41,7 +41,10 @@ public class LoginCommand extends Command {
 
         String token = statement.getString(1);
 
-        commandOutput.setMessage("#@Tkn%" + token);
+        if(token.equals("Nu exista acest cont!"))
+            commandOutput.setMessage(token);
+        else
+            commandOutput.setMessage("#@Tkn%" + token);
 
         statement.close();
 
