@@ -16,8 +16,12 @@ public class BoardStatusCommand extends Command
     @Override
     protected CommandOutput runCommand(ArrayList<String> parameters, ClientThread clientThread) throws Exception
     {
-        if (clientThread.getGameRoom() == null)
-            return null;
+        if (clientThread.getGameRoom() == null || !clientThread.getGameRoom().getRoomIsFull())
+        {
+            CommandOutput notInGame = new CommandOutput();
+            notInGame.setMessage("!notingame!");
+            return notInGame;
+        }
 
         CommandOutput status = new CommandOutput();
 
