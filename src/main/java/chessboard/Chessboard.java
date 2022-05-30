@@ -1,6 +1,7 @@
 package chessboard;
 
 import chessboard.pieces.ChessPiece;
+import chessboard.pieces.Queen;
 import commands.CommandOutput;
 
 
@@ -154,6 +155,31 @@ public class Chessboard
 
             return -1;
         }
+
+        if (movedPiece.getPieceCode() == 'P' && targetI == 0)
+        {
+            ChessPiece whiteQueen2 = ChessPiece.getChessPieceFromCode('Q');
+            board[ targetI ][ targetJ ].setChessPiece( whiteQueen2 );
+
+            whiteQueen2.setParentField(board[ targetI ][ targetJ ]);
+
+            debugPrintChessboard();
+
+            return 1;
+        }
+
+        if (movedPiece.getPieceCode() == 'p' && targetI == 7)
+        {
+            ChessPiece blackQueen2 = ChessPiece.getChessPieceFromCode('q');
+            board[ targetI ][ targetJ ].setChessPiece( blackQueen2 );
+
+            blackQueen2.setParentField(board[ targetI ][ targetJ ]);
+
+            debugPrintChessboard();
+
+            return 1;
+        }
+
 
         debugPrintChessboard();
 

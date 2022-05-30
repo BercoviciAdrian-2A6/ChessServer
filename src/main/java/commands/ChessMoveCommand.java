@@ -55,9 +55,14 @@ public class ChessMoveCommand extends Command
         if (moveStatus == -1)
             commandOutput.setMessage("INVALID MOVE - CHECK");
 
-        if (moveStatus == 0)
+        if (moveStatus == 0 || moveStatus == 1)
         {
-            commandOutput.setMessage("MOVE WAS APPLIED!");
+            String msg = "MOVE WAS APPLIED!";
+
+            if (moveStatus == 1)
+                msg += " *!pawn upgraded";
+
+            commandOutput.setMessage(msg);
             clientThread.getGameRoom().changeRoundOwner(parameters.get(0));
         }
 
