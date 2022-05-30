@@ -9,6 +9,8 @@ public class CommandManager
     static CommandManager singleton = null;
     ArrayList<Command> commands = new ArrayList<>();
 
+
+
     private CommandManager ()
     {
         commands.add( new LoginCommand("login") );
@@ -47,19 +49,18 @@ public class CommandManager
          */
         String[] commandBreakdown = commandLine.split(" ");
 
-        ArrayList<String> paremeters = new ArrayList<>();
+        ArrayList<String> parameters = new ArrayList<>();
 
         for (int parameterIndex = 2; parameterIndex < commandBreakdown.length; parameterIndex++)
         {
-            paremeters.add( commandBreakdown[parameterIndex] );
+            parameters.add( commandBreakdown[parameterIndex] );
         }
 
         CommandOutput commandOutput = null;
 
         for (Command command: commands)
         {
-            commandOutput = command.triggerCommand( commandBreakdown[0], commandBreakdown[1], paremeters, clientThread);
-
+            commandOutput = command.triggerCommand( commandBreakdown[0], commandBreakdown[1], parameters, clientThread);
             if (commandOutput != null) {//a command has been triggered
                 return commandOutput;
             }

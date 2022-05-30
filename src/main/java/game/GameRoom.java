@@ -77,6 +77,9 @@ public class GameRoom extends Thread
         p1Thread.queueResponse(matchBegin);
         p2Thread.queueResponse(matchBegin);
 
+
+        System.out.println(p1Thread.getResponseQueue().size());
+
         chessboard = new Chessboard();
         chessboard.debugPrintChessboard();
 

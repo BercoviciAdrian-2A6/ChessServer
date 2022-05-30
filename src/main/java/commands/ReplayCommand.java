@@ -20,7 +20,7 @@ public class ReplayCommand extends Command
 
         int matchIndex = Integer.parseInt( parameters.get(0) );
 
-        commandOutput.setMessage(MatchDAO.getMatchReplay(matchIndex));
+        commandOutput.setMessage("matchRep:" + MatchDAO.getMatchReplay(matchIndex));
 
         return commandOutput;
     }

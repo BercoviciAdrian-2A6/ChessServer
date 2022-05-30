@@ -13,7 +13,7 @@ public class Database {
         //String address = "jdbc:postgresql://localhost:5432/JavaLab10";
         //connection = DriverManager.getConnection(address, "postgres", "STUDENT");
         String address = "jdbc:oracle:thin:@//localhost:1521/XE";
-        connection = DriverManager.getConnection(address, "STUDENT", "STUDENT");
+        connection = DriverManager.getConnection(address, "student", "student");
     }
 
     public Connection getConnection()
